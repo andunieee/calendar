@@ -1,0 +1,248 @@
+import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "Calendar";
+    width: 420px;
+    height: 520px;
+    background: #1e1e2e;
+
+    in-out property <string> year-label: "2025";
+    in-out property <string> month-label: "January";
+    in-out property <[string]> day-names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    in-out property <[string]> days: [];
+    in-out property <int> today-index: -1;
+
+    callback prev-month();
+    callback next-month();
+    callback prev-year();
+    callback next-year();
+    callback year-changed(string);
+    callback month-changed(string);
+
+    FocusScope {
+        key-pressed(event) => {
+            if (event.text == "\u{F702}") {
+                root.prev-month();
+                return accept;
+            } else if (event.text == "\u{F703}") {
+                root.next-month();
+                return accept;
+            } else if (event.text == "\u{F700}") {
+                root.prev-year();
+                return accept;
+            } else if (event.text == "\u{F701}") {
+                root.next-year();
+                return accept;
+            }
+            return reject;
+        }
+
+        VerticalBox {
+            padding: 24px;
+            spacing: 16px;
+            alignment: center;
+
+            // Year navigation
+            HorizontalBox {
+                alignment: center;
+                spacing: 16px;
+
+                Rectangle {
+                    width: 40px;
+                    height: 36px;
+                    background: #313244;
+                    border-radius: 6px;
+                    border-width: 1px;
+                    border-color: #45475a;
+
+                    Text {
+                        text: "‹";
+                        font-size: 20px;
+                        font-weight: 400;
+                        color: #89b4fa;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea {
+                        clicked => { root.prev-year(); }
+                    }
+                }
+
+                Rectangle {
+                    width: 80px;
+                    height: 36px;
+                    background: #313244;
+                    border-radius: 6px;
+                    border-width: 1px;
+                    border-color: #585b70;
+
+                    TextInput {
+                        text: root.year-label;
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #cdd6f4;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                        font-family: "monospace";
+                        accepted => { root.year-changed(self.text); }
+                    }
+                }
+
+                Rectangle {
+                    width: 40px;
+                    height: 36px;
+                    background: #313244;
+                    border-radius: 6px;
+                    border-width: 1px;
+                    border-color: #45475a;
+
+                    Text {
+                        text: "›";
+                        font-size: 20px;
+                        font-weight: 400;
+                        color: #89b4fa;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea {
+                        clicked => { root.next-year(); }
+                    }
+                }
+            }
+
+            // Month navigation
+            HorizontalBox {
+                alignment: center;
+                spacing: 16px;
+
+                Rectangle {
+                    width: 40px;
+                    height: 36px;
+                    background: #45475a;
+                    border-radius: 6px;
+                    border-width: 1px;
+                    border-color: #585b70;
+
+                    Text {
+                        text: "‹";
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #cdd6f4;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea {
+                        clicked => { root.prev-month(); }
+                    }
+                }
+
+                Rectangle {
+                    width: 120px;
+                    height: 36px;
+                    background: #45475a;
+                    border-radius: 6px;
+                    border-width: 1px;
+                    border-color: #585b70;
+
+                    TextInput {
+                        text: root.month-label;
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #cdd6f4;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                        font-family: "monospace";
+                        accepted => { root.month-changed(self.text); }
+                    }
+                }
+
+                Rectangle {
+                    width: 40px;
+                    height: 36px;
+                    background: #45475a;
+                    border-radius: 6px;
+                    border-width: 1px;
+                    border-color: #585b70;
+
+                    Text {
+                        text: "›";
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #cdd6f4;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea {
+                        clicked => { root.next-month(); }
+                    }
+                }
+            }
+
+            // Day names header
+            HorizontalBox {
+                alignment: center;
+                spacing: 8px;
+
+                for day-name in root.day-names: Rectangle {
+                    width: 48px;
+                    height: 32px;
+
+                    Text {
+                        text: day-name;
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #89b4fa;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                        font-family: "monospace";
+                    }
+                }
+            }
+
+            // Calendar grid (7 rows x 7 columns = 49 cells)
+            VerticalBox {
+                spacing: 8px;
+                alignment: center;
+
+                for row in 7: HorizontalBox {
+                    spacing: 8px;
+                    alignment: center;
+
+                    for col in 7: Rectangle {
+                        property <int> cell-index: row * 7 + col;
+                        property <bool> is-today: cell-index == root.today-index;
+                        width: 48px;
+                        height: 40px;
+                        border-radius: 8px;
+                        background: is-today ? #f38ba8 : (root.days[cell-index] != "" ? #313244 : transparent);
+                        border-width: is-today ? 2px : 0px;
+                        border-color: #f5c2e7;
+
+                        Text {
+                            text: root.days[cell-index];
+                            font-size: 14px;
+                            font-weight: is-today ? 700 : 400;
+                            color: is-today ? #1e1e2e : #cdd6f4;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                            font-family: "monospace";
+                        }
+                    }
+                }
+            }
+
+            // Keyboard hint
+            Text {
+                text: "←→ Months  ↑↓ Years";
+                font-size: 11px;
+                color: #6c7086;
+                horizontal-alignment: center;
+                font-family: "monospace";
+            }
+        }
+    }
+}
