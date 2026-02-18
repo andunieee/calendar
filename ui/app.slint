@@ -2,7 +2,7 @@ import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
 
 export component MainWindow inherits Window {
     title: "Calendar";
-    width: 420px;
+    width: 440px;
     height: 520px;
     background: #1e1e2e;
 
@@ -38,14 +38,14 @@ export component MainWindow inherits Window {
         }
 
         VerticalBox {
-            padding: 24px;
-            spacing: 16px;
+            padding: 12px;
+            spacing: 8px;
             alignment: center;
 
             // Year navigation
             HorizontalBox {
                 alignment: center;
-                spacing: 16px;
+                spacing: 8px;
 
                 Rectangle {
                     width: 40px;
@@ -65,7 +65,9 @@ export component MainWindow inherits Window {
                     }
 
                     TouchArea {
-                        clicked => { root.prev-year(); }
+                        clicked => {
+                            root.prev-year();
+                        }
                     }
                 }
 
@@ -85,7 +87,9 @@ export component MainWindow inherits Window {
                         horizontal-alignment: center;
                         vertical-alignment: center;
                         font-family: "monospace";
-                        accepted => { root.year-changed(self.text); }
+                        accepted => {
+                            root.year-changed(self.text);
+                        }
                     }
                 }
 
@@ -107,7 +111,9 @@ export component MainWindow inherits Window {
                     }
 
                     TouchArea {
-                        clicked => { root.next-year(); }
+                        clicked => {
+                            root.next-year();
+                        }
                     }
                 }
             }
@@ -135,7 +141,9 @@ export component MainWindow inherits Window {
                     }
 
                     TouchArea {
-                        clicked => { root.prev-month(); }
+                        clicked => {
+                            root.prev-month();
+                        }
                     }
                 }
 
@@ -155,7 +163,9 @@ export component MainWindow inherits Window {
                         horizontal-alignment: center;
                         vertical-alignment: center;
                         font-family: "monospace";
-                        accepted => { root.month-changed(self.text); }
+                        accepted => {
+                            root.month-changed(self.text);
+                        }
                     }
                 }
 
@@ -177,7 +187,9 @@ export component MainWindow inherits Window {
                     }
 
                     TouchArea {
-                        clicked => { root.next-month(); }
+                        clicked => {
+                            root.next-month();
+                        }
                     }
                 }
             }
@@ -205,7 +217,7 @@ export component MainWindow inherits Window {
 
             // Calendar grid (7 rows x 7 columns = 49 cells)
             VerticalBox {
-                spacing: 8px;
+                spacing: 2px;
                 alignment: center;
 
                 for row in 7: HorizontalBox {
