@@ -2,6 +2,13 @@
 name = "calendar"
 version = "0.1.0"
 edition = "2021"
+description = "A simple desktop calendar application"
+authors = ["George <andunieee@cassis.cash>"]
+license = "MIT"
+repository = "https://github.com/andunieee/calendar"
+homepage = "https://github.com/andunieee/calendar"
+keywords = ["calendar", "gui", "slint", "desktop"]
+categories = ["date-and-time", "gui"]
 
 [dependencies]
 slint = "1.7"

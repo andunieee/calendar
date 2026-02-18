@@ -1,0 +1,66 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libfontconfig1-dev libfreetype6-dev
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build
+      run: cargo build --release --locked
+
+    - name: Package
+      run: |
+        mkdir -p calendar-linux
+        cp target/release/calendar calendar-linux/
+        cp README.md calendar-linux/
+        cp LICENSE calendar-linux/ 2>/dev/null || echo "No LICENSE file"
+        tar czf calendar-linux-x86_64.tar.gz calendar-linux/
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: calendar-linux-x86_64
+        path: calendar-linux-x86_64.tar.gz
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/**/*
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

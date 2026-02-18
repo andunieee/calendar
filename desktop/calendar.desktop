@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Calendar
+Comment=A simple desktop calendar application
+Exec=calendar
+Icon=calendar
+Type=Application
+Terminal=false
+Categories=Office;Calendar;
+Keywords=calendar;date;time;
+StartupNotify=true
